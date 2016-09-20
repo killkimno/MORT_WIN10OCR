@@ -1,0 +1,17 @@
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\bin\Debug\MORT_WIN10OC.dll
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\bin\Debug\MORT_WIN10OC.pdb
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\bin\Debug\MORT_WIN10OC.pri
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\MORT_WIN10OC.csprojResolveAssemblyReference.cache
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\MORT_WIN10OC.dll
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\MORT_WIN10OC.pdb
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\priconfig.xml
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\priconfig.xml.intermediate
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\layout.resfiles
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\layout.resfiles.intermediate
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\resources.resfiles
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\resources.resfiles.intermediate
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\pri.resfiles
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\pri.resfiles.intermediate
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\qualifiers.txt
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\qualifiers.txt.intermediate
+G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OC\MORT_WIN10OC\obj\Debug\MultipleQualifiersPerDimensionFound.txt
