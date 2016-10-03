@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Media.Ocr;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Globalization;
 
 using System.Runtime.InteropServices;
 
@@ -36,9 +37,9 @@ namespace MORT_WIN10OCR
             //return "...!"
             return instance.resultString;
         }
-        public static string ProcessOCR()
+        public static string ProcessOCR(string code)
         {
-            instance.OCR();
+            instance.OCR(code);
             //return "...!"
             return instance.resultString;
         }
@@ -91,7 +92,7 @@ namespace MORT_WIN10OCR
 
         public static string Test(byte[] test)
         {
-            instance.OCR();
+           // instance.OCR();
 
             return instance.resultString;
         }
@@ -101,14 +102,25 @@ namespace MORT_WIN10OCR
             return "";
         }
 
-        private async void OCR()
+        private async void OCR(string code)
         {
             //resultString = "sdfsdf@!ER";
             if (isReady)
             {
                 isReady = false;
                 //await LoadSampleImage();
-                OcrEngine ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+                OcrEngine ocrEngine = null;
+                if (code == "")
+                {
+                    ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+                }
+                else
+                {
+                    Language ocrLanguage = new Language(code);
+                    ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
+                }
+                //OcrEngine ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+      
                 if (bitmap2 != null)
                 {
                     byte[] test = new byte[5];
