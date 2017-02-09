@@ -21,33 +21,40 @@ namespace MORT_WIN10OCR
         void GetBuffer(out byte* buffer, out uint capacity);
     }
 
+    //ready = 이미지 받을 준비.
+    //process = ocr 처리중
+    //
+    public enum ProcessType
+    {
+        Ready = 0, Process = 1, ImgLoading =2,
+    }
+
     public class Class1
     {
         string resultString = "";
         int result = 0;
-        bool isReady = true;
         SoftwareBitmap bitmap = null;
         SoftwareBitmap bitmap2 = null;
+        private ProcessType processType = ProcessType.Ready;
         public static Class1 instance = new Class1();
+        public OcrEngine ocrEngine = null;
 
+        //OCR 에 사용할 이미지 저장.
         public static string TestOpenCv(List<int> r, List<int> g, List<int> b, int x, int y)
         {
-            instance.LoadBitMapFromData(r, g, b, x, y);
+            if(instance.processType != ProcessType.Process)
+            {
+                instance.LoadBitMapFromData(r, g, b, x, y);
+            }
+            
             //instance.OCR();
             //return "...!"
             return instance.resultString;
         }
-        public static string ProcessOCR(string code)
-        {
-            instance.OCR(code);
-            //return "...!"
-            return instance.resultString;
-        }
-
-        
 
         public void LoadBitMapFromData(List<int> r, List<int> g, List<int> b, int x, int y)
         {
+            processType = ProcessType.ImgLoading;
             int BYTES_PER_PIXEL = 4;
             bitmap2 = new SoftwareBitmap(BitmapPixelFormat.Bgra8, x, y);
             unsafe
@@ -85,9 +92,121 @@ namespace MORT_WIN10OCR
                     }
                 }
             }
+            processType = ProcessType.Ready;
+        }
 
+        //ocr 처리.
+        public static string ProcessOCR()
+        {
+            instance.OCR();
+           
+            return instance.resultString;
+        }
 
+        //OCR 사용 가능한지 확인.
+        public static bool GetIsAvailable()
+        {
+            bool isAvailable = false;
 
+            if(instance.processType == ProcessType.Ready)
+            {
+                isAvailable = true;
+            }
+
+            return isAvailable;
+        }
+        
+        public static List<string> GetAvailableLanguageList()
+        {
+            List<string> codeList = new List<string>();
+            IReadOnlyList<Language> list = OcrEngine.AvailableRecognizerLanguages;
+            
+            for(int i = 0; i < list.Count; i++)
+            {
+                codeList.Add(list[i].LanguageTag + "," + list[i].DisplayName);
+            }
+
+            return codeList;
+        }
+
+        //OCR 처리
+        public static void InitOcr(string code)
+        {            
+            instance.ocrEngine = null;
+            if (code == "")
+            {
+                instance.ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+            }
+            else
+            {              
+                Language ocrLanguage = new Language(code);
+                if (OcrEngine.IsLanguageSupported(ocrLanguage))
+                {
+                    instance.ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
+                }
+                else
+                {
+                    instance.ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+                }
+                   
+            }
+            
+            instance.processType = ProcessType.Ready;
+            
+        }
+
+        //이 dll 자체를 사용 가능한지 확인.
+        public static bool GetIsAvailableDLL()
+        {
+            bool isAvailable = false;
+
+            return isAvailable;
+        }
+
+        private async void OCR()
+        {
+            //resultString = "sdfsdf@!ER";
+            if (processType != ProcessType.Process)
+            {
+                //await LoadSampleImage();
+                /*
+                OcrEngine ocrEngine = null;
+                if (code == "")
+                {
+                    ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
+                }
+                else
+                {
+                    Language ocrLanguage = new Language(code);
+                    ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
+                }
+                */
+
+                if (bitmap2 != null && ocrEngine != null)
+                {
+                    processType = ProcessType.Process;
+                    //resultString = "1";
+                    OcrResult ocrResult = await ocrEngine.RecognizeAsync(bitmap2);
+                    resultString = ocrResult.Text;
+                    processType = ProcessType.Ready;
+                }
+                else
+                {
+                    resultString = "bitmap null";
+                    processType = ProcessType.Ready;
+                }
+            }
+            else
+            {
+                resultString = " not ready";
+            }
+
+           
+        }
+
+        public static string GetText()
+        {
+            return instance.resultString;
         }
 
         public static string Test(byte[] test)
@@ -102,57 +221,7 @@ namespace MORT_WIN10OCR
             return "";
         }
 
-        private async void OCR(string code)
-        {
-            //resultString = "sdfsdf@!ER";
-            if (isReady)
-            {
-                isReady = false;
-                //await LoadSampleImage();
-                OcrEngine ocrEngine = null;
-                if (code == "")
-                {
-                    ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
-                }
-                else
-                {
-                    Language ocrLanguage = new Language(code);
-                    ocrEngine = OcrEngine.TryCreateFromLanguage(ocrLanguage);
-                }
-                //OcrEngine ocrEngine = OcrEngine.TryCreateFromUserProfileLanguages();
-      
-                if (bitmap2 != null)
-                {
-                    byte[] test = new byte[5];
-
-                    //resultString = "1";
-                    OcrResult ocrResult = await ocrEngine.RecognizeAsync(bitmap2);
-                    resultString = ocrResult.Text;
-                    
-                }
-                else
-                {
-                    resultString = "bitmap null";
-                }
-
-
-                isReady = true;
-            }
-            else
-            {
-                resultString = " not ready";
-            }
-
-
-
-            //string extractedText = ocrResult.Text;
-
-        }
-
-        public string GetText()
-        {
-            return resultString;
-        }
+        
 
         private async Task LoadImage(StorageFile file)
         {
@@ -163,8 +232,6 @@ namespace MORT_WIN10OCR
                 bitmap = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
 
                 Windows.Graphics.Imaging.PixelDataProvider pixelData = await decoder.GetPixelDataAsync();
-
-
             }
 
         }
@@ -172,9 +239,7 @@ namespace MORT_WIN10OCR
 
         private async Task LoadSampleImage()
         {
-
             var file = await KnownFolders.MusicLibrary.GetFileAsync("mortresult.png");
-
             await LoadImage(file);
         }
 
