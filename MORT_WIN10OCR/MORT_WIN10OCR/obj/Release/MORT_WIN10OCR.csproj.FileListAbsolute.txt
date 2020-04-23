@@ -18,7 +18,6 @@ G:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\R
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\bin\Release\MORT_WIN10OCR.dll
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\bin\Release\MORT_WIN10OCR.pdb
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\bin\Release\MORT_WIN10OCR.pri
-H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MORT_WIN10OCR.csprojAssemblyReference.cache
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MORT_WIN10OCR.csproj.CoreCompileInputs.cache
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MORT_WIN10OCR.dll
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MORT_WIN10OCR.pdb
@@ -37,3 +36,4 @@ H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\R
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\qualifiers.txt
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\qualifiers.txt.intermediate
 H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MultipleQualifiersPerDimensionFound.txt
+H:\Project\visualStudio Projects\MORT_WIN10OCR\MORT_WIN10OCR\MORT_WIN10OCR\obj\Release\MORT_WIN10OCR.csprojAssemblyReference.cache
