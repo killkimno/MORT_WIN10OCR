@@ -176,7 +176,19 @@ namespace MORT_WIN10OCR
                     //resultString = "1";
                     ocrResult = null;
                     ocrResult = await ocrEngine.RecognizeAsync(bitmap2);
-                    resultString = ocrResult.Text;
+
+                    //---------
+                    //라인으로 하기.
+                    string result = "";
+                    for(int i = 0; i < ocrResult.Lines.Count; i++)
+                    {
+                        result += ocrResult.Lines[i].Text + System.Environment.NewLine;
+                    }
+                    resultString = result;
+                    //------------
+
+                    //원문으로 하기.
+                    //resultString = ocrResult.Text;
                     processType = ProcessType.Ready;
                     
                 }
