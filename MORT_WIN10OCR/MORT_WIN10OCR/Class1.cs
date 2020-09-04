@@ -41,7 +41,7 @@ namespace MORT_WIN10OCR
         public OcrResult ocrResult = null;
 
         //OCR 에 사용할 이미지 저장.
-        public static string TestOpenCv(List<int> r, List<int> g, List<int> b, int x, int y)
+        public static string TestOpenCv(List<byte> r, List<byte> g, List<byte> b, int x, int y)
         {
             if(instance.processType != ProcessType.Process)
             {
@@ -53,7 +53,7 @@ namespace MORT_WIN10OCR
             return instance.resultString;
         }
 
-        public void LoadBitMapFromData(List<int> r, List<int> g, List<int> b, int x, int y)
+        public void LoadBitMapFromData(List<byte> r, List<byte> g, List<byte> b, int x, int y)
         {
             processType = ProcessType.ImgLoading;
             int BYTES_PER_PIXEL = 4;
