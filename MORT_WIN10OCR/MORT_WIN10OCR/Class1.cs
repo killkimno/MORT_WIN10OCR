@@ -9,7 +9,12 @@ using Windows.Storage;
 using Windows.Globalization;
 
 using System.Runtime.InteropServices;
+using Windows.Media.SpeechSynthesis;
+using Windows.UI.Xaml.Controls;
 
+
+using Windows.Media.Playback;
+using Windows.Media.Core;
 
 namespace MORT_WIN10OCR
 {
@@ -31,6 +36,8 @@ namespace MORT_WIN10OCR
 
     public class Class1
     {
+        MediaPlayer mediaElement = new MediaPlayer();
+        //MediaElement mediaElement = new MediaElement();
         string resultString = "";
         int result = 0;
         SoftwareBitmap bitmap = null;
@@ -39,6 +46,42 @@ namespace MORT_WIN10OCR
         public static Class1 instance = new Class1();
         public OcrEngine ocrEngine = null;
         public OcrResult ocrResult = null;
+
+        public static void TextToSpeach(string text, int type)
+        {
+            instance.AsyncTextToSpeach(text, type);
+  
+        }
+
+
+        private async Task AsyncTextToSpeach(string text, int type)
+        {
+
+            if(type == 1)
+            {
+                if(mediaElement.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+                {
+                    return;
+                }
+            }
+          
+            //     MediaElement mediaElement = new MediaElement();
+            // The object for controlling the speech synthesis engine (voice).
+            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+
+            // Generate the audio stream from plain text.
+            SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(text);
+
+            // Send the stream to the media object.
+            //mediaElement.SetSource(stream, stream.ContentType);
+
+            mediaElement.Source = MediaSource.CreateFromStream(stream, stream.ContentType);
+
+            mediaElement.Volume = 1;
+            mediaElement.Play();
+          
+
+        }
 
         //OCR 에 사용할 이미지 저장.
         public static string TestOpenCv(List<byte> r, List<byte> g, List<byte> b, int x, int y)
