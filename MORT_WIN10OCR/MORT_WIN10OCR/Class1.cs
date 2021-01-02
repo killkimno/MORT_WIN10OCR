@@ -26,6 +26,8 @@ namespace MORT_WIN10OCR
         void GetBuffer(out byte* buffer, out uint capacity);
     }
 
+
+
     //ready = 이미지 받을 준비.
     //process = ocr 처리중
     //
@@ -96,6 +98,15 @@ namespace MORT_WIN10OCR
             return instance.resultString;
         }
 
+        public static void LoadImgFromByte(byte[] data, int x, int y)
+        {
+            if (instance.processType != ProcessType.Process)
+            {
+                instance.LoadBitMapFromData(data, x, y);
+            }
+
+        }
+
         public void LoadBitMapFromData(List<byte> r, List<byte> g, List<byte> b, int x, int y)
         {
             processType = ProcessType.ImgLoading;
@@ -139,6 +150,55 @@ namespace MORT_WIN10OCR
             processType = ProcessType.Ready;
         }
 
+
+        public void LoadBitMapFromData(byte[] byteData, int x, int y)
+        {
+            processType = ProcessType.ImgLoading;
+            int BYTES_PER_PIXEL = 4;
+            bitmap2 = new SoftwareBitmap(BitmapPixelFormat.Bgra8, x, y);
+            unsafe
+            {
+                using (BitmapBuffer buffer = bitmap2.LockBuffer(BitmapBufferAccessMode.Write))
+                {
+                    using (var referenceDest = buffer.CreateReference())
+                    {
+                        byte* data;
+                        uint capacity;
+                        var desc = buffer.GetPlaneDescription(0);
+                        ((IMemoryBufferByteAccess)referenceDest).GetBuffer(out data, out capacity);
+                        int count = 0;
+                        for (uint row = 0; row < y; row++)
+                        {
+                            for (uint col = 0; col < x; col++)
+                            {
+                                var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
+
+                                /*
+
+                                data[currPixel + 0] = byteData[count + 1]; // Blue
+                                data[currPixel + 1] = byteData[count + 2];  // Green
+                                data[currPixel + 2] = byteData[count + 3]; // Red
+                                data[currPixel + 3] = byteData[count + 0]; ; // alpha
+                                */
+
+
+
+                                data[currPixel + 0] = byteData[count + 0]; // Blue
+                                data[currPixel + 1] = byteData[count + 1];  // Green
+                                data[currPixel + 2] = byteData[count + 2]; // Red
+                                data[currPixel + 3] = byteData[count + 3]; ; // alpha
+
+                                count = count + 4;
+
+                            }
+                        }
+                    }
+                }
+            }
+            //SaveImageAsync("mort_resut.png");
+            processType = ProcessType.Ready;
+        }
+
         //ocr 처리.
         public static string ProcessOCR()
         {
@@ -173,9 +233,12 @@ namespace MORT_WIN10OCR
             return codeList;
         }
 
+
         //OCR 처리
         public static void InitOcr(string code)
-        {            
+        {
+
+
             instance.ocrEngine = null;
             if (code == "")
             {
@@ -353,17 +416,32 @@ namespace MORT_WIN10OCR
             {
                 var decoder = await BitmapDecoder.CreateAsync(stream);
 
-                bitmap = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
+                bitmap2 = await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied);
 
                 Windows.Graphics.Imaging.PixelDataProvider pixelData = await decoder.GetPixelDataAsync();
             }
 
         }
 
+        private async Task SaveImageAsync(string filename)
+        {
+            StorageFolder pictureFolder = KnownFolders.SavedPictures;
+            StorageFile file = await pictureFolder.CreateFileAsync(
+                  filename,
+                  CreationCollisionOption.ReplaceExisting);
+
+            BitmapEncoder encoder = await BitmapEncoder.CreateAsync(Windows.Graphics.Imaging.BitmapEncoder.JpegEncoderId, await file.OpenAsync(FileAccessMode.ReadWrite));
+
+            encoder.SetSoftwareBitmap(bitmap2);
+
+            await encoder.FlushAsync();
+
+        }
+
 
         private async Task LoadSampleImage()
         {
-            var file = await KnownFolders.MusicLibrary.GetFileAsync("mortresult.png");
+            var file = await KnownFolders.PicturesLibrary.GetFileAsync("mortresult.png");
             await LoadImage(file);
         }
 
