@@ -86,17 +86,20 @@ namespace MORT_WIN10OCR
         }
 
         //OCR 에 사용할 이미지 저장.
-        public static string TestOpenCv(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        public static void StartMakeBitmap()
         {
             if(instance.processType != ProcessType.Process)
             {
-                instance.LoadBitMapFromData(r, g, b, x, y);
+                instance.DoMakeBitmap();
+
             }
-            
-            //instance.OCR();
-            //return "...!"
-            return instance.resultString;
         }
+
+        public static void SetBitMap(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        {
+            instance.SetBitMapData(r, g, b, x, y);
+        }
+
 
         public static void LoadImgFromByte(byte[] data, int x, int y)
         {
@@ -107,11 +110,37 @@ namespace MORT_WIN10OCR
 
         }
 
-        public void LoadBitMapFromData(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        private List<byte> r = null;
+        private List<byte> g = null;
+        private List<byte> b = null;
+
+        private int dataX;
+        private int dataY;
+        private void SetBitMapData(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            dataX = x;
+            dataY = y;
+        }
+
+        public void ClearList(List<byte> lista)
+        {
+            lista.Clear();
+            int identificador = GC.GetGeneration(lista);
+            GC.Collect(identificador, GCCollectionMode.Forced);
+
+            lista.TrimExcess();
+            lista = null;
+        }
+
+        public void DoMakeBitmap()
         {
             processType = ProcessType.ImgLoading;
+
             int BYTES_PER_PIXEL = 4;
-            bitmap2 = new SoftwareBitmap(BitmapPixelFormat.Bgra8, x, y);
+            bitmap2 = new SoftwareBitmap(BitmapPixelFormat.Bgra8, dataX, dataY);
             unsafe
             {
                 using (BitmapBuffer buffer = bitmap2.LockBuffer(BitmapBufferAccessMode.Write))
@@ -123,17 +152,14 @@ namespace MORT_WIN10OCR
                         var desc = buffer.GetPlaneDescription(0);
                         ((IMemoryBufferByteAccess)referenceDest).GetBuffer(out data, out capacity);
                         int count = 0;
-                        for (uint row = 0; row < y; row++)
+                        for (uint row = 0; row < dataY; row++)
                         {
-                            for (uint col = 0; col < x; col++)
+                            for (uint col = 0; col < dataX; col++)
                             {
                                 var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
 
                                 // Index of the current pixel in the buffer (defined by the next 4 bytes, BGRA8)
 
-                                //data[currPixel + 0] = (byte)b[(int)(row * y + col)]; // Blue
-                                //data[currPixel + 1] = (byte)g[(int)(row * y + col)];  // Green
-                                //data[currPixel + 2] = (byte)r[(int)(row * y + col)]; // Red
 
                                 data[currPixel + 0] = (byte)b[(int)(count)]; // Blue
                                 data[currPixel + 1] = (byte)g[(int)(count)];  // Green
@@ -141,13 +167,16 @@ namespace MORT_WIN10OCR
 
                                 count++;
 
-                                //resultString = currPixel.ToString() + "/" + count.ToString() + " /r: " + r.Count.ToString() + " / g: " + g.Count.ToString() + " / b :" + b.Count;ToString() ;
                             }
                         }
                     }
                 }
             }
-            processType = ProcessType.Ready;
+
+            ClearList(r);
+            ClearList(g);
+            ClearList(b);
+             processType = ProcessType.Ready;
         }
 
 
