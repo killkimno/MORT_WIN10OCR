@@ -350,7 +350,7 @@ namespace MORT_WIN10OCR
             public double[] sizeX;         //size x;
             public double[] sizeY;         //size y;
             public int[] wordCounts;    //각 라인마다 워드 수.
-
+            public double angle;        //각도.
             public int wordsIndex;
         }
 
@@ -389,7 +389,17 @@ namespace MORT_WIN10OCR
                     }
 
                     data.wordsIndex = totalWordCount;
-                    data.words = new string[totalWordCount];
+
+                    if(instance.ocrResult.TextAngle == null)
+                    {
+                        data.angle = 180;
+                    }
+                    else
+                    {
+                        data.angle = (double)instance.ocrResult.TextAngle;
+                    }
+
+                        data.words = new string[totalWordCount];
                     data.x = new double[totalWordCount];
                     data.y = new double[totalWordCount];
                     data.sizeY = new double[totalWordCount];
