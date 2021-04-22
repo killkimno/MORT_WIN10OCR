@@ -95,9 +95,9 @@ namespace MORT_WIN10OCR
             }
         }
 
-        public static void SetBitMap(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        public static void SetBitMap(byte[] dataList, int channels, int x, int y)
         {
-            instance.SetBitMapData(r, g, b, x, y);
+            instance.SetBitMapData(dataList, channels,x, y);
         }
 
 
@@ -110,13 +110,16 @@ namespace MORT_WIN10OCR
 
         }
 
+        private byte[] dataList = null;
+
         private List<byte> r = null;
         private List<byte> g = null;
         private List<byte> b = null;
 
+        private int channels;
         private int dataX;
         private int dataY;
-        private void SetBitMapData(List<byte> r, List<byte> g, List<byte> b, int x, int y)
+        private void SetBitMapData_Old(List<byte> r, List<byte> g, List<byte> b, int x, int y)
         {
             this.r = r;
             this.g = g;
@@ -125,8 +128,19 @@ namespace MORT_WIN10OCR
             dataY = y;
         }
 
+        private void SetBitMapData(byte[] data, int channels, int x, int y)
+        {
+            this.dataList = data;
+            this.channels = channels;
+            dataX = x;
+            dataY = y;
+        }
+
         public void ClearList(List<byte> lista)
         {
+            if (lista == null)
+                return;
+
             lista.Clear();
             int identificador = GC.GetGeneration(lista);
             GC.Collect(identificador, GCCollectionMode.Forced);
@@ -140,7 +154,9 @@ namespace MORT_WIN10OCR
             processType = ProcessType.ImgLoading;
 
             int BYTES_PER_PIXEL = 4;
+
             bitmap2 = new SoftwareBitmap(BitmapPixelFormat.Bgra8, dataX, dataY);
+
             unsafe
             {
                 using (BitmapBuffer buffer = bitmap2.LockBuffer(BitmapBufferAccessMode.Write))
@@ -151,32 +167,59 @@ namespace MORT_WIN10OCR
                         uint capacity;
                         var desc = buffer.GetPlaneDescription(0);
                         ((IMemoryBufferByteAccess)referenceDest).GetBuffer(out data, out capacity);
+                        
+                      
+                        //Marshal.Copy((IntPtr)data, dataList, 0, dataList.Length);
+                        
                         int count = 0;
-                        for (uint row = 0; row < dataY; row++)
+                        if(channels == 1)
                         {
-                            for (uint col = 0; col < dataX; col++)
+                            for (uint row = 0; row < dataY; row++)
                             {
-                                var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
+                                for (uint col = 0; col < dataX; col++)
+                                {
+                                    var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
 
-                                // Index of the current pixel in the buffer (defined by the next 4 bytes, BGRA8)
+                                    // Index of the current pixel in the buffer (defined by the next 4 bytes, BGRA8)
 
-
-                                data[currPixel + 0] = (byte)b[(int)(count)]; // Blue
-                                data[currPixel + 1] = (byte)g[(int)(count)];  // Green
-                                data[currPixel + 2] = (byte)r[(int)(count)]; // Red
-
-                                count++;
-
+                                    data[currPixel + 0] = dataList[count];
+                                    data[currPixel + 1] = dataList[count];
+                                    data[currPixel + 2] = dataList[count];
+                                    count++;
+                                }
                             }
                         }
+                        else
+                        {
+                            for (uint row = 0; row < dataY; row++)
+                            {
+                                for (uint col = 0; col < dataX; col++)
+                                {
+                                    var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
+
+                                    // Index of the current pixel in the buffer (defined by the next 4 bytes, BGRA8)
+
+                                    data[currPixel + 0] = dataList[count++];
+                                    data[currPixel + 1] = dataList[count++];
+                                    data[currPixel + 2] = dataList[count++];
+                                }
+                            }
+                        }
+                     
+                        
                     }
                 }
             }
+            Array.Clear(dataList, 0, dataList.Length);
 
-            ClearList(r);
-            ClearList(g);
-            ClearList(b);
-             processType = ProcessType.Ready;
+            int identificador = GC.GetGeneration(dataList);
+            GC.Collect(identificador, GCCollectionMode.Forced);
+            dataList = null;
+
+            //ClearList(r);
+            //ClearList(g);
+            //ClearList(b);
+            processType = ProcessType.Ready;
         }
 
 
@@ -201,16 +244,6 @@ namespace MORT_WIN10OCR
                             for (uint col = 0; col < x; col++)
                             {
                                 var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
-
-                                /*
-
-                                data[currPixel + 0] = byteData[count + 1]; // Blue
-                                data[currPixel + 1] = byteData[count + 2];  // Green
-                                data[currPixel + 2] = byteData[count + 3]; // Red
-                                data[currPixel + 3] = byteData[count + 0]; ; // alpha
-                                */
-
-
 
                                 data[currPixel + 0] = byteData[count + 0]; // Blue
                                 data[currPixel + 1] = byteData[count + 1];  // Green
