@@ -189,8 +189,9 @@ namespace MORT_WIN10OCR
                                 }
                             }
                         }
-                        else
+                        else if (channels == 3)
                         {
+                            //rgb
                             for (uint row = 0; row < dataY; row++)
                             {
                                 for (uint col = 0; col < dataX; col++)
@@ -204,6 +205,25 @@ namespace MORT_WIN10OCR
                                     data[currPixel + 2] = dataList[count++];
                                 }
                             }
+                        }
+                        else if(channels == 4)
+                        {  //rgba
+                            for (uint row = 0; row < dataY; row++)
+                            {
+                                for (uint col = 0; col < dataX; col++)
+                                {
+                                    var currPixel = desc.StartIndex + desc.Stride * row + BYTES_PER_PIXEL * col;
+
+                                    // Index of the current pixel in the buffer (defined by the next 4 bytes, BGRA8)
+
+                                    data[currPixel + 0] = dataList[count++];
+                                    data[currPixel + 1] = dataList[count++];
+                                    data[currPixel + 2] = dataList[count++];
+                                    data[currPixel + 3] = 255;
+                                    count++;
+                                }
+                            }
+
                         }
                      
                         
